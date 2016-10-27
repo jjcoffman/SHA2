@@ -13,7 +13,7 @@ class Thread_Runner implements Runnable
 	private int count;
 	private Thread_Runner[] threads;
 
-	Thread_Runner(String name, int size, Thread_Runner[] thd, int THREAD_COUNT) 
+	Thread_Runner(String name, int size, Thread_Runner[] thd, int THREAD_COUNT, AVLTree tree) 
 	{
 		System.out.println("Creating Thread: " + name);
 		threadName = name;
