@@ -1,31 +1,57 @@
 
+
 public class AVLNode 
 {
-	//here are the default values used by the avl tree
 	byte[] shaValue;
-	byte[] x;
+	byte[] binValue;
 	AVLNode left;
 	AVLNode right;
 	int height;
 	
-	//the following method is a generic constructor for the node
+	/**
+	 * Generic Constructor
+	 */
 	public AVLNode()
 	{
 		shaValue = null;
+		binValue = null;
+		left = null;
+		right = null;
 		height = 1;
-		left = null;
-		right = null;
 	}
-	
-	//this is the overloaded constructor that passes a value to the node
-	public AVLNode(byte[] val, byte[] x)
+	/**
+	 * Creates an AVLNode
+	 * @param sha
+	 * @param bin
+	 */
+	public AVLNode(byte[] sha, byte[] bin)
 	{
-		shaValue = val;
+		shaValue = sha;
+		binValue = bin;
 		height = 0;
-		this.x = x;
-		left = null;
-		right = null;
+		left = new AVLNode();
+		right = new AVLNode();
 	}
 	
+	/**
+	 * 
+	 * @param sha
+	 * @param bin
+	 * @param left
+	 * @param right
+	 */
+	public AVLNode(byte[] sha, byte[] bin, AVLNode left, AVLNode right)
+	{
+		shaValue = sha;
+		binValue = bin;
+		height = 0;
+		this.left = left;
+		this.right = right;
+	}
 	
+	public boolean exists()
+	{
+		return(shaValue != null);
+			
+	}
 }
