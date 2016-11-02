@@ -1,4 +1,3 @@
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -8,19 +7,16 @@ class Thread_Runner implements Runnable
 {
    private Thread t;
    private String threadName;
-   private int max;
    private int byteSize;
-   private int count;
    private int cleaner;
-   private Thread_Runner[] threads;
+   private Controller control;
    private AVLTree tree;
    
-   Thread_Runner(String name, int size, Thread_Runner[] thd, int THREAD_COUNT, AVLTree t) 
+   Thread_Runner(String name, int size, Controller control, AVLTree t) 
    {
       threadName = name;
       byteSize = size;
-      threads = thd;
-      count = THREAD_COUNT;
+      this.control = control;
       tree = t;
    }
    
@@ -52,7 +48,7 @@ class Thread_Runner implements Runnable
 
     	   search(XBytes, shaX);
 
-    	   if(++cleaner < 10000)
+    	   if(++cleaner < 1000)
     	   {
     		   insert(shaX, XBytes);
     	   }
@@ -64,13 +60,14 @@ class Thread_Runner implements Runnable
    {
 	   Object[] obj = tree.search(new AVLNode(shaX, XBytes));
 	   int currentCount = (int)obj[0];
-	   if(currentCount > max && currentCount != 31)
+	   if(currentCount > control.getMax() && currentCount != 32)
 	   {
-		   updateMax(currentCount);
-		   System.out.println(threadName + " Current Count: " + currentCount + " Max: " + max);
+		   System.out.println(threadName + " Max: " + currentCount);
 		   try 
 		   {
-			   writeOut(XBytes, ((AVLNode)obj[1]).binValue, shaX, ((AVLNode)obj[1]).shaValue, currentCount);
+            byte[] YBytes = ((AVLNode)obj[1]).binValue;
+            byte[] shaY = ((AVLNode)obj[1]).shaValue;
+			   writeOut(XBytes, YBytes, shaX, shaY, currentCount);
 		   } 
 		   catch (IOException e) 
 		   {
@@ -86,49 +83,11 @@ private synchronized void insert(byte[] shaX, byte[] xBytes)
 	
    }
 
-private synchronized void writeOut(byte[] X, byte[] Y, byte[] ShaX, byte[] ShaY, int count) throws IOException
+   private void writeOut(byte[] X, byte[] Y, byte[] ShaX, byte[] ShaY, int count) throws IOException
    {
-	   StringBuffer sb = new StringBuffer();
-       for (int i = 0; i < ShaX.length; i++) {
-         sb.append(Integer.toString((ShaX[i] & 0xff) + 0x100, 16).substring(1));
-       }
-       System.out.println("Hex format for X: " + sb.toString());
-       
-       StringBuffer sb2 = new StringBuffer();
-       for (int i = 0; i < ShaY.length; i++) {
-           sb2.append(Integer.toString((ShaY[i] & 0xff) + 0x100, 16).substring(1));
-         }
-         System.out.println("Hex format for Y: " + sb2.toString());
-       
-       
-       String path = System.getProperty("user.home") + System.getProperty("file.separator") + "Desktop" + 
-				System.getProperty("file.separator");
-       FileOutputStream file1 = new FileOutputStream(path + "X.bin");
-       FileOutputStream file2 = new FileOutputStream(path + "Y.bin");
-       file1.write(X);
-       file2.write(Y);
-       file1.close();
-       file2.close();
+	  control.writeOut(X, Y, ShaX, ShaY, count);
    }
-   
-   public void updateMax(int newMax)
-   {
-	   for(int i = 0; i < count; i++)
-	   {
-		   if(threads[i].getMax() < newMax)
-			   threads[i].setMax(newMax);	   
-	   }
-   }
-   
-   private void setMax(int count2) 
-   {
-	 this.max = count2;
-   }
-
-private int getMax() 
-{
-	return this.max;
-}
+ 
 
 public void start() 
    {

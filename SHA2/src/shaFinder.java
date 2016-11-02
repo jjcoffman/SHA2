@@ -1,4 +1,3 @@
-import java.util.Random;
 
 public class shaFinder 
 {
@@ -8,11 +7,12 @@ public class shaFinder
 	public static void main(String[] args) 
 	{
 		int i = 0;
-		thread = new Thread_Runner[8];
+		thread = new Thread_Runner[THREAD_COUNT];
 		tree = AVLTree.getTree();
+		Controller control = Controller.getController();
 		for(i = 1; i <= THREAD_COUNT; i++)
 		{
-			thread[i-1] = new Thread_Runner(("Thread-" + i), i*(new Random().nextInt(100)), thread, THREAD_COUNT, tree);
+			thread[i-1] = new Thread_Runner(("Thread-" + i), i*4, control, tree);
 			thread[i-1].start();
 		}
     }
